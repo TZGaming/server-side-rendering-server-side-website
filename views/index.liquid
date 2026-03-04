@@ -1,1 +1,21 @@
-Succes!
+{% render 'partials/head.liquid', title: 'SnappThis Homepage' %}
+
+<main>
+  {% render 'partials/topbar.liquid' %}
+
+  <ul class="photo-grid">
+    {% for snappmap in snappmaps %}
+      {% for snap in snappmap.snaps %}
+        {% if snap.picture != null %}
+          <li>
+            <a href="/snapmap/{{ snap.uuid }}">
+              <img src="https://fdnd-agency.directus.app/assets/{{ snap.picture }}" loading="lazy">
+            </a>
+          </li>
+        {% endif %}
+      {% endfor %}
+    {% endfor %}
+  </ul>
+
+  {% render 'partials/bottombar.liquid' %}
+</main>

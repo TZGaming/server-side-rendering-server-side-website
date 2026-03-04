@@ -1,28 +1,12 @@
-// Importeer het npm package Express (uit de door npm aangemaakte node_modules map)
-// Deze package is geïnstalleerd via `npm install`, en staat als 'dependency' in package.json
 import express from 'express'
-
-// Importeer de Liquid package (ook als dependency via npm geïnstalleerd)
 import { Liquid } from 'liquidjs';
-
-
-console.log('Hieronder moet je waarschijnlijk nog wat veranderen')
-// Doe een fetch naar de data die je nodig hebt
-// const apiResponse = await fetch('...')
-
-// Lees van de response van die fetch het JSON object in, waar we iets mee kunnen doen
-// const apiResponseJSON = await apiResponse.json()
-
-// Controleer eventueel de data in je console
-// (Let op: dit is _niet_ de console van je browser, maar van NodeJS, in je terminal)
-// console.log(apiResponseJSON)
 
 
 // Maak een nieuwe Express applicatie aan, waarin we de server configureren
 const app = express()
 
 // Maak werken met data uit formulieren iets prettiger
-app.use(express.urlencoded({extended: true}))
+app.use(express.urlencoded({ extended: true }))
 
 // Gebruik de map 'public' voor statische bestanden (resources zoals CSS, JavaScript, afbeeldingen en fonts)
 // Bestanden in deze map kunnen dus door de browser gebruikt worden
@@ -30,21 +14,42 @@ app.use(express.static('public'))
 
 // Stel Liquid in als 'view engine'
 const engine = new Liquid();
-app.engine('liquid', engine.express()); 
+app.engine('liquid', engine.express());
 
 // Stel de map met Liquid templates in
 // Let op: de browser kan deze bestanden niet rechtstreeks laden (zoals voorheen met HTML bestanden)
 app.set('views', './views')
 
-// Maak een GET route voor de index (meestal doe je dit in de root, als /)
+
+const params = {
+  'filter[uuid][_eq]': '2b106014-5926-4e19-9707-dc289f0cf526'
+}
+
+const apiURL = 'https://fdnd-agency.directus.app/items/snappthis_snapmap?fields=*.*&' + new URLSearchParams(params)
+const snappMap = await fetch(apiURL)
+const snappmapResJSON = await snappMap.json()
+
+
 app.get('/', async function (request, response) {
-   // Render index.liquid uit de Views map
-   // Geef hier eventueel data aan mee
-   response.render('index.liquid')
+
+  response.render('index.liquid', { snappmaps: snappmapResJSON.data })
 })
 
-// Maak een POST route voor de index; hiermee kun je bijvoorbeeld formulieren afvangen
-// Hier doen we nu nog niets mee, maar je kunt er mee spelen als je wilt
+
+app.get('/snapmap/:uuid', async function (request, response) {
+
+  const apiURL = 'https://fdnd-agency.directus.app/items/snappthis_snap?filter[uuid][_eq]=' + request.params.uuid
+  const snap = await fetch(apiURL)
+  const snapResJSON = await snap.json()
+
+  const userApiURL = 'https://fdnd-agency.directus.app/items/snappthis_user?filter[uuid][_eq]=' + snapResJSON.data[0].author
+  const user = await fetch(userApiURL)
+  const userResJSON = await user.json()
+
+  response.render('snapdetail.liquid', { snap: snapResJSON.data[0], snappmap: snappmapResJSON.data, user: userResJSON.data[0]})
+})
+
+
 app.post('/', async function (request, response) {
   // Je zou hier data kunnen opslaan, of veranderen, of wat je maar wilt
   // Er is nog geen afhandeling van een POST, dus stuur de bezoeker terug naar /

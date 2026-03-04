@@ -1,0 +1,63 @@
+:root {
+    --color-primary: #172F3B;
+}
+
+@font-face {
+    font-family: Bariol-Regular;
+    src: url(assets/fonts/Bariol_Regular.otf);
+}
+
+@font-face {
+    font-family: Bariol-Bold;
+    src: url(assets/fonts/Bariol_Bold.otf);
+}
+
+@font-face {
+    font-family: Bariol-Italic;
+    src: url(assets/fonts/Bariol_Regular_Italic.otf);
+}
+
+body {
+    margin: 0;
+}
+
+ul.photo-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 33%);
+    gap: 0.5%;
+    row-gap: 0;
+    padding: 0;
+    margin: 0;
+    margin-top: 4px;
+
+    li {
+        list-style: none;
+
+        img {
+            aspect-ratio: 1 / 1;
+            width: 100%;
+            object-fit: cover;
+            object-position: center;
+        }
+    }
+}
+
+nav {
+    height: 9vh;
+    background-color: var(--color-primary);
+
+    &.top-navbar {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        color: white;
+        font-family: Bariol-Bold;
+        font-size: clamp(0.75rem, 0.7497rem + 0.4289vw, 1.125rem);
+    }
+
+    &.bottom-navbar {
+        position: fixed;
+        bottom: 0;
+        width: 100%;
+    }
+}
