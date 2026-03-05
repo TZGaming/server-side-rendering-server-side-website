@@ -3,14 +3,25 @@
 <main>
   {% render 'partials/topbar.liquid' %}
 
+  <article class="snappmap-name">
+    <img src="/assets/svg/group_blue.svg">
+    <h1>{{ snappmap.name }}</h1>
+  </article>
+
+  <article class="camera-button-container">
+    <button>
+      <img src="/assets/svg/camera.svg">
+    </button>
+  </article>
+
   <ul class="photo-grid">
     {% for snappmap in snappmaps %}
       {% for snap in snappmap.snaps %}
         {% if snap.picture != null %}
           <li>
-            <a href="/snapmap/{{ snap.uuid }}">
+            {% comment %} <a href="/snapmap/{{ snap.uuid }}"> {% endcomment %}
               <img src="https://fdnd-agency.directus.app/assets/{{ snap.picture }}" loading="lazy">
-            </a>
+            {% comment %} </a> {% endcomment %}
           </li>
         {% endif %}
       {% endfor %}

@@ -22,7 +22,7 @@ app.set('views', './views')
 
 
 const params = {
-  'filter[uuid][_eq]': '2b106014-5926-4e19-9707-dc289f0cf526'
+  'filter[uuid][_eq]': '60ea581a-76a2-4b32-9a65-a1a6fb2dc92f'
 }
 
 const apiURL = 'https://fdnd-agency.directus.app/items/snappthis_snapmap?fields=*.*&' + new URLSearchParams(params)
@@ -31,8 +31,10 @@ const snappmapResJSON = await snappMap.json()
 
 
 app.get('/', async function (request, response) {
-
-  response.render('index.liquid', { snappmaps: snappmapResJSON.data })
+  response.render('index.liquid', { 
+    snappmap: snappmapResJSON.data[0], 
+    snappmaps: snappmapResJSON.data 
+  })
 })
 
 
@@ -48,7 +50,6 @@ app.get('/snapmap/:uuid', async function (request, response) {
 
   response.render('snapdetail.liquid', { snap: snapResJSON.data[0], snappmap: snappmapResJSON.data, user: userResJSON.data[0]})
 })
-
 
 app.post('/', async function (request, response) {
   // Je zou hier data kunnen opslaan, of veranderen, of wat je maar wilt
