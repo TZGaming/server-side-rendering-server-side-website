@@ -17,13 +17,9 @@
   <ul class="photo-grid">
     {% for snappmap in snappmaps %}
       {% for snap in snappmap.snaps %}
-        {% if snap.picture != null %}
           <li>
-            {% comment %} <a href="/snapmap/{{ snap.uuid }}"> {% endcomment %}
               <img src="https://fdnd-agency.directus.app/assets/{{ snap.picture }}" loading="lazy">
-            {% comment %} </a> {% endcomment %}
           </li>
-        {% endif %}
       {% endfor %}
     {% endfor %}
   </ul>

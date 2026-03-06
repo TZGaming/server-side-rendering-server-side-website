@@ -113,6 +113,7 @@ nav {
         fill: white;
 
         svg {
+            width: 3.6vh;
             &:hover {
                 cursor: pointer;
             }
@@ -132,6 +133,7 @@ nav {
         gap: 10%;
 
         svg {
+            width: 4.2vh;
             &:hover {
                 cursor: pointer;
             }
