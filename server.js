@@ -21,35 +21,87 @@ app.engine('liquid', engine.express());
 app.set('views', './views')
 
 
-const params = {
-  'filter[uuid][_eq]': '60ea581a-76a2-4b32-9a65-a1a6fb2dc92f'
-}
+// Snapmaps
 
-const apiURL = 'https://fdnd-agency.directus.app/items/snappthis_snapmap?fields=*.*&' + new URLSearchParams(params)
-const snappMap = await fetch(apiURL)
-const snappmapResJSON = await snappMap.json()
+const groupsResponse = await fetch('https://fdnd-agency.directus.app/items/snappthis_group?fields=name,uuid,snappmap.snappthis_snapmap_uuid.*.*.*')
+const groupsJSON = await groupsResponse.json()
 
 
-app.get('/', async function (request, response) {
-  response.render('index.liquid', { 
-    snappmap: snappmapResJSON.data[0], 
-    snappmaps: snappmapResJSON.data 
-  })
+app.get('/snappmaps', async function (request, response) {
+
+  response.render('snappmaps.liquid', { groups: groupsJSON.data })
 })
 
+app.get('/snappmaps/:uuid', async function (request, response) {
+  // 1. Haal de snappmap op
+  const snappmapResponse = await fetch('https://fdnd-agency.directus.app/items/snappthis_snapmap?fields=*.*.*.*&filter[uuid][_eq]=' + request.params.uuid);
+  const snappmapJSON = await snappmapResponse.json();
+  
+  // Controleer of de data array bestaat en gevuld is
+  const snappmap = (snappmapJSON.data && snappmapJSON.data.length > 0) ? snappmapJSON.data[0] : null;
 
-app.get('/snapmap/:uuid', async function (request, response) {
+  // 2. Zoek de groep (beveiligd tegen null-pointer errors)
+  const parentGroup = groupsJSON.data.find(group => 
+    group.snappmap && group.snappmap.some(s => 
+      s.snappthis_snapmap_uuid && s.snappthis_snapmap_uuid.uuid === request.params.uuid
+    )
+  );
 
-  const apiURL = 'https://fdnd-agency.directus.app/items/snappthis_snap?filter[uuid][_eq]=' + request.params.uuid
-  const snap = await fetch(apiURL)
-  const snapResJSON = await snap.json()
+  // 3. Render: Geef 'snappmap' en 'groupName' expliciet mee
+  response.render('snappmap.liquid', { 
+    snapmap: snappmap,
+    groupName: parentGroup ? parentGroup.name : 'Geen groep gevonden',
+    snappmaps: snappmap ? [snappmap] : [] // Geef een lege lijst mee als snappmap null is
+  });
+});
 
-  const userApiURL = 'https://fdnd-agency.directus.app/items/snappthis_user?filter[uuid][_eq]=' + snapResJSON.data[0].author
-  const user = await fetch(userApiURL)
-  const userResJSON = await user.json()
 
-  response.render('snapdetail.liquid', { snap: snapResJSON.data[0], snappmap: snappmapResJSON.data, user: userResJSON.data[0]})
+
+// Snapps
+app.get('/snapps/:location', async function (request, response) {
+
+  const snappsResponse = await fetch('https://fdnd-agency.directus.app/items/snappthis_snap?fields=*.*&filter[location][_eq]=' + request.params.location)
+  const snappsJSON = await snappsResponse.json()
+
+
+  response.render('snappmap.liquid', { snapps: snappsJSON.data })
 })
+
+app.get('/snapps/snappmap/:uuid', async function (request, response) {
+  const url = `https://fdnd-agency.directus.app/items/snappthis_snap?fields=*.*,actions.action&filter[uuid][_eq]=${request.params.uuid}`;
+  const snappResponse = await fetch(url);
+  const snappJSON = await snappResponse.json();
+  const snapp = (snappJSON.data && snappJSON.data.length > 0) ? snappJSON.data[0] : null;
+
+  if (!snapp) return response.status(404).send("Snap niet gevonden");
+
+  let snappmap = null;
+  const snapmapId = typeof snapp.snapmap === 'object' ? snapp.snapmap.uuid : snapp.snapmap;
+
+  if (snapmapId) {
+      const snappmapResponse = await fetch(`https://fdnd-agency.directus.app/items/snappthis_snapmap?fields=*.*.*.*&filter[uuid][_eq]=${snapmapId}`);
+      const snappmapJSON = await snappmapResponse.json();
+      
+      if (snappmapJSON.data && Array.isArray(snappmapJSON.data) && snappmapJSON.data.length > 0) {
+          snappmap = snappmapJSON.data[0];
+      }
+  }
+
+  const parentGroup = groupsJSON.data.find(group => 
+    group.snappmap && group.snappmap.some(s => 
+      s.snappthis_snapmap_uuid && s.snappthis_snapmap_uuid.uuid === snapmapId
+    )
+  );
+
+  // 4. Render
+  response.render('snapp.liquid', { 
+    snapp: snapp,
+    snapmap: snappmap,
+    groupName: parentGroup ? parentGroup.name : 'Geen groep gevonden',
+    groups: groupsJSON.data
+  });
+});
+
 
 app.post('/', async function (request, response) {
   // Je zou hier data kunnen opslaan, of veranderen, of wat je maar wilt
