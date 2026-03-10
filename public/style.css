@@ -44,9 +44,16 @@ nav {
         font-size: clamp(0.75rem, 0.7497rem + 0.4289vw, 1.125rem);
         fill: white;
 
+        h1 {
+            margin: 0;
+        }
+
         svg {
+            width: 3.6vh;
+            transition: scale .2s;
             &:hover {
                 cursor: pointer;
+                scale: 0.93;
             }
         }
 
@@ -86,8 +93,11 @@ nav {
         gap: 10%;
 
         svg {
+            width: 4.2vh;
+            transition: scale .2s;
             &:hover {
                 cursor: pointer;
+                scale: 0.93;
             }
         }
     }
