@@ -6,7 +6,7 @@
 }
 
 * {
-  box-sizing: border-box;
+    box-sizing: border-box;
 }
 
 @font-face {
@@ -51,6 +51,7 @@ nav {
         svg {
             width: 3.6vh;
             transition: scale .2s;
+
             &:hover {
                 cursor: pointer;
                 scale: 0.93;
@@ -95,6 +96,7 @@ nav {
         svg {
             width: 4.2vh;
             transition: scale .2s;
+
             &:hover {
                 cursor: pointer;
                 scale: 0.93;
@@ -104,6 +106,59 @@ nav {
 
     .active {
         color: var(--color-secondary);
+    }
+}
+
+.group-container {
+    border-bottom: 2px rgba(128, 128, 128, 0.25) solid;
+    height: 8vh;
+    font-family: Bariol-Regular;
+
+    .group-content {
+        height: 100%;
+        margin-left: 15px;
+        margin-right: 15px;
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+        justify-content: space-between;
+        .group-information {
+
+            a {
+                font-size: 20px;
+            }
+
+            p {
+                margin: 0;
+                color: var(--text-color1);
+            }
+        }
+    }
+
+    a {
+        text-decoration: none;
+        color: var(--text-color2);
+    }
+
+    .group-interaction-container {
+        display: flex;
+        flex-direction: row;
+        gap: 10px;
+
+        .combined-icon {
+            height: 100%;
+            display: flex;
+            align-items: center;
+
+            img {
+                height: 35px;
+            }
+
+            svg {
+                height: 70%;
+                align-self: flex-start;
+            }
+        }
     }
 }
 
@@ -135,6 +190,7 @@ article {
         display: flex;
         justify-content: center;
         align-items: flex-start;
+
         button {
             background-color: var(--color-secondary);
             border: none;
@@ -175,7 +231,7 @@ article {
             margin-left: 5px;
             margin-right: 5px;
             margin-bottom: 9vh;
-        } 
+        }
 
         p {
             margin: 0;
@@ -194,7 +250,7 @@ ul.photo-grid {
     margin: 0;
     margin-top: 4px;
     margin-bottom: 8vh;
-    align-items: start; 
+    align-items: start;
     align-content: start;
 
     @media screen and (min-width: 1024px) {

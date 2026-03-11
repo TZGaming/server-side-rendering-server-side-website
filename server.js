@@ -20,13 +20,36 @@ app.engine('liquid', engine.express());
 // Let op: de browser kan deze bestanden niet rechtstreeks laden (zoals voorheen met HTML bestanden)
 app.set('views', './views')
 
-
 // Snapmaps
+app.get('/', async function (request, response) {
 
-const groupsResponse = await fetch('https://fdnd-agency.directus.app/items/snappthis_group?fields=name,uuid,snappmap.snappthis_snapmap_uuid.*.*.*')
+  response.redirect('/groups')
+})
+
+// Groups
+const groupsResponse = await fetch('https://fdnd-agency.directus.app/items/snappthis_group?fields=name,uuid,users,snappmap.snappthis_snapmap_uuid.*')
 const groupsJSON = await groupsResponse.json()
 
+app.get('/groups', async function (request, response) {
 
+  response.render('groups.liquid', { groups: groupsJSON.data })
+})
+
+app.get('/groups/:uuid', async function (request, response) {
+  const groupUuid = request.params.uuid
+
+  const url = `https://fdnd-agency.directus.app/items/snappthis_group?filter[uuid][_eq]=${groupUuid}&fields=name,uuid,snappmap.snappthis_snapmap_uuid.*`
+  
+  const groupResponse = await fetch(url)
+  const groupJSON = await groupResponse.json()
+
+  const groupData = groupJSON.data[0]
+
+  response.render('group-detail.liquid', { group: groupData })
+})
+
+
+// Snapmaps
 app.get('/snappmaps', async function (request, response) {
 
   response.render('snappmaps.liquid', { groups: groupsJSON.data })
